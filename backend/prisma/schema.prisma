@@ -1,0 +1,135 @@
+// Prisma schema (initial draft). Run `prisma migrate` to apply migrations.
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          Int         @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String      @unique
+  password    String
+  role        String      @default("user")
+  disabled    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  jobs        Job[]       @relation("assignedJobs")
+  photos      Photo[]
+  timeEntries TimeEntry[]
+}
+
+model Customer {
+  id        Int        @id @default(autoincrement())
+  name      String
+  billing   String?
+  locations Location[]
+  jobs      Job[]
+}
+
+model Location {
+  id         Int      @id @default(autoincrement())
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  address    String
+}
+
+model Job {
+  id             Int         @id @default(autoincrement())
+  customer       Customer    @relation(fields: [customerId], references: [id])
+  customerId     Int
+  description    String
+  priority       Int         @default(3)
+  estimatedHours Float?
+  assignedTo     User?       @relation("assignedJobs", fields: [assignedToId], references: [id])
+  assignedToId   Int?
+  status         String      @default("open")
+  tasks          Task[]
+  timeEntries    TimeEntry[]
+  invoices       Invoice[]
+  parts          Part[]
+  photos         Photo[]
+  createdAt      DateTime    @default(now())
+}
+
+model Task {
+  id           Int         @id @default(autoincrement())
+  job          Job         @relation(fields: [jobId], references: [id])
+  jobId        Int
+  description  String
+  estimatedHrs Float?
+  status       String      @default("open")
+  timeEntries  TimeEntry[]
+}
+
+model TimeEntry {
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int
+  job      Job?      @relation(fields: [jobId], references: [id])
+  jobId    Int?
+  task     Task?     @relation(fields: [taskId], references: [id])
+  taskId   Int?
+  start    DateTime
+  end      DateTime?
+  duration Int? // duration in minutes (computed or provided)
+  notes    String?
+  billable Boolean   @default(true)
+}
+
+model Part {
+  id          Int     @id @default(autoincrement())
+  job         Job     @relation(fields: [jobId], references: [id])
+  jobId       Int
+  sku         String
+  description String?
+  quantity    Int     @default(1)
+  unitPrice   Float   @default(0)
+  taxFlag     Boolean @default(false)
+}
+
+model Invoice {
+  id        Int           @id @default(autoincrement())
+  createdAt DateTime      @default(now())
+  job       Job?          @relation(fields: [jobId], references: [id])
+  jobId     Int?
+  total     Float
+  lines     InvoiceLine[]
+}
+
+model InvoiceLine {
+  id          Int     @id @default(autoincrement())
+  invoice     Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId   Int
+  description String
+  qty         Int
+  unitPrice   Float
+  tax         Float?
+}
+
+model Photo {
+  id         Int      @id @default(autoincrement())
+  job        Job      @relation(fields: [jobId], references: [id])
+  jobId      Int
+  uploader   User     @relation(fields: [uploaderId], references: [id])
+  uploaderId Int
+  key        String   @unique
+  thumbnailKey String?
+  mime       String
+  size       Int
+  gps        Json?
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  Int?
+  userId    Int?
+  data      Json?
+  createdAt DateTime @default(now())
+}

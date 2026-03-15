@@ -1,0 +1,41 @@
+# Node modules and build outputs — do not check these into git
+node_modules/
+dist/
+build/
+
+# Environment files (local secrets/credentials)
+# Copy `.env.example` -> `.env` locally. Keeping `.env` out of git is the safest practice.
+# If you intentionally want to commit secrets in this private repo, you can remove `.env` from
+# this file — but consider storing secrets in a secure manager instead.
+.env
+.env.local
+
+# macOS Finder metadata
+.DS_Store
+
+# Editor/IDE workspace settings (may include local paths, creds)
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log
+yarn-error.log
+
+# Local database / object-storage / caches used by docker-compose
+# These are Docker volumes mounted to the repo for local convenience — they are large and
+# should not be committed.
+pgdata/
+miniodata/
+redisdata/
+
+# Test coverage output
+coverage/
+
+# Notes & recommendations:
+# - Track database migration files (e.g. Prisma migrations) in git (do NOT ignore /prisma/migrations).
+# - If you add editor settings that are safe to share (team settings), you may prefer to commit
+#   `.vscode/settings.json` selectively and remove the entire directory from ignore.
+# - If you want reproducible dev environments on another machine, rely on `./scripts/setup.*`
+#   and `docker compose` instead of committing runtime state like volumes and node_modules.
+
