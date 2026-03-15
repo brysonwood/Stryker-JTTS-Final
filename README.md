@@ -15,8 +15,9 @@ Stryker JTTS is a field service job and time tracking application. It lets staff
 - Git
 
 ## Quick Start
+Clone the repository.
 
-From the repository root:
+Then, from the repository root:
 
 ```powershell
 docker compose up -d --build
