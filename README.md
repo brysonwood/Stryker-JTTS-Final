@@ -81,13 +81,6 @@ These accounts are created by the seed script and are for local testing only.
 | Ethan Clark | ethan.clark@example.local | TechPass1! | Technician |
 | Noah Patel | noah.patel@example.local | TechPass1! | Technician |
 
-## Default Local URLs
-
-- Frontend: http://localhost:3000
-- Backend: http://localhost:4000
-- MinIO Console: http://localhost:9001
-- Adminer: http://localhost:8080
-
 ## Environment Notes
 
 - `.env.example` provides the default local configuration.
